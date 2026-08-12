@@ -1,4 +1,11 @@
-[
+```javascript
+/* =========================================================
+   AMIGODLE — friends-data.js
+
+   > > > EDITE OS SEUS AMIGOS AQUI <<<
+   ========================================================= */
+
+window.AMIGODLE_FRIENDS = [
   {
     "id": 1,
     "nome": "João",
@@ -14,11 +21,12 @@
     "time": "Botafogo",
     "nivel_de_gamer": "Tryhard"
   },
+
   {
     "id": 2,
     "nome": "Arthur",
     "apelido": "Khan",
-    "foto": "images/2.svg",
+    "foto": "images/1.svg",
     "idade": 23,
     "genero": "Masculino",
     "profissao": "Atoa",
@@ -29,11 +37,12 @@
     "time": "Fluminense",
     "nivel_de_gamer": "Prata"
   },
+
   {
     "id": 3,
     "nome": "Romulo",
     "apelido": "Fala Dele",
-    "foto": "images/3.svg",
+    "foto": "images/1.svg",
     "idade": 23,
     "genero": "LGBTQIAPN+",
     "profissao": "Prefeito",
@@ -44,11 +53,12 @@
     "time": "Flamengo",
     "nivel_de_gamer": "Casual"
   },
+
   {
     "id": 4,
     "nome": "Matheus",
     "apelido": "Mathizzex",
-    "foto": "images/4.svg",
+    "foto": "images/1.svg",
     "idade": 26,
     "genero": "Alguma",
     "profissao": "Barman",
@@ -59,6 +69,7 @@
     "time": "Cruzeiro",
     "nivel_de_gamer": "Troll"
   },
+
   {
     "id": 5,
     "nome": "Leticia",
@@ -74,4 +85,5 @@
     "time": "Vasco",
     "nivel_de_gamer": "Casual"
   }
-]
+];
+```
