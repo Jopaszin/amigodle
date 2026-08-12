@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300">
+  <defs>
+    <linearGradient id="g3" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#A78BFA"/>
+      <stop offset="100%" stop-color="#2E1065"/>
+    </linearGradient>
+  </defs>
+  <rect width="300" height="300" rx="24" fill="url(#g3)"/>
+  <circle cx="150" cy="115" r="55" fill="rgba(255,255,255,0.18)"/>
+  <path d="M60 260 Q150 165 240 260 L240 300 L60 300 Z" fill="rgba(255,255,255,0.18)"/>
+  <text x="150" y="185" font-family="'Baloo 2', 'Segoe UI', sans-serif" font-size="90" font-weight="700"
+        fill="#0f1116" text-anchor="middle" dominant-baseline="middle">A</text>
+</svg>

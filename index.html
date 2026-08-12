@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Amigodle — Você consegue descobrir o amigo de hoje?</title>
+<meta name="description" content="Amigodle: o jogo de adivinhação diário inspirado no Wordle, mas com os seus amigos de verdade." />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2222%22 fill=%22%23ffb238%22/><text x=%2250%22 y=%2268%22 font-size=%2258%22 text-anchor=%22middle%22 font-family=%22sans-serif%22 font-weight=%22800%22 fill=%22%23221400%22>A</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<!-- ===================== LOADING ===================== -->
+<div id="loadingScreen" class="loading-screen">
+  <div class="spinner" aria-hidden="true"></div>
+  <p>Carregando seus amigos...</p>
+</div>
+
+<!-- ===================== APP ===================== -->
+<div id="app" class="app-shell hidden">
+
+  <header class="topbar">
+    <button id="btnRules" class="icon-btn" aria-label="Como jogar" title="Como jogar">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 2-3 4"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+    </button>
+    <div class="topbar-group">
+      <button id="btnStats" class="icon-btn" aria-label="Estatísticas" title="Estatísticas">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      </button>
+      <button id="btnSettings" class="icon-btn" aria-label="Configurações" title="Configurações">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="hero-mark">
+      <span class="dot" aria-hidden="true"></span>
+      <h1 class="logo">AMIGODLE</h1>
+    </div>
+    <p class="subtitle">Você consegue descobrir o amigo de hoje?</p>
+
+    <div class="hero-stats">
+      <div class="pill"><span>🎯</span> Tentativa <strong id="attemptCountPill">0</strong></div>
+      <div class="pill streak"><span>🔥</span> Sequência <strong id="streakPill">0</strong></div>
+      <div class="pill" id="dayPill"><span>#</span><strong id="puzzleNumber">1</strong></div>
+    </div>
+  </section>
+
+  <div class="mode-switch" role="tablist" aria-label="Modo de jogo">
+    <button class="mode-btn active" id="btnModeDaily" role="tab" aria-selected="true">🗓️ Modo Diário</button>
+    <button class="mode-btn" id="btnModeFree" role="tab" aria-selected="false">♾️ Modo Livre</button>
+  </div>
+  <p class="mode-hint" id="modeHint">Um amigo novo todo dia — todo mundo joga contra o mesmo amigo.</p>
+
+  <div class="free-picker" id="freePicker">
+    <button class="primary-btn" id="btnNewRandomFriend" style="width:100%;">🎲 Sortear novo amigo</button>
+  </div>
+
+  <div class="portrait-wrap">
+    <div class="portrait" id="portrait">
+      <img id="portraitImg" src="" alt="Foto borrada do amigo secreto" />
+      <div class="portrait-badge" id="portraitBadge">?</div>
+    </div>
+  </div>
+
+  <div class="search-area">
+    <div class="search-row">
+      <div class="search-box">
+        <label for="guessInput" class="visually-hidden">Digite o nome de um amigo</label>
+        <input
+          type="text"
+          id="guessInput"
+          placeholder="Digite o nome de um amigo..."
+          autocomplete="off"
+          aria-describedby="errorMsg"
+        />
+        <div class="suggestions hidden" id="suggestions" role="listbox"></div>
+      </div>
+      <button class="guess-btn" id="btnGuess" disabled>Tentar</button>
+    </div>
+    <p class="error-msg" id="errorMsg" role="alert"></p>
+  </div>
+
+  <div class="attempts-row">
+    <span>Tentativas: <strong id="attemptsLabel">0</strong></span>
+    <span id="attemptsExtra"></span>
+  </div>
+
+  <div class="board-wrap" id="boardWrap">
+    <table class="board" id="board" aria-label="Tabuleiro de tentativas">
+      <thead>
+        <tr id="boardHeadRow">
+          <th>Amigo</th>
+          <!-- demais colunas geradas via JS a partir de data.js -->
+        </tr>
+      </thead>
+      <tbody id="boardBody"></tbody>
+    </table>
+  </div>
+  <div class="empty-board" id="emptyBoard">
+    Faça sua primeira tentativa para começar a descobrir o amigo de hoje 👀
+  </div>
+
+  <div class="legend">
+    <span class="legend-item"><span class="legend-swatch green"></span> Igual</span>
+    <span class="legend-item"><span class="legend-swatch yellow"></span> Perto / relacionado</span>
+    <span class="legend-item"><span class="legend-swatch red"></span> Diferente</span>
+    <span class="legend-item">⬆️⬇️ Maior / menor</span>
+  </div>
+
+  <p class="footer-note">
+    Amigodle é um jogo local — nenhum dado é enviado para servidores externos.
+    Todas as informações ficam salvas apenas neste navegador.
+  </p>
+</div>
+
+<!-- ===================== MODAL: REGRAS ===================== -->
+<div class="overlay hidden" id="modalRules">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="rulesTitle">
+    <div class="modal-head">
+      <h2 class="modal-title" id="rulesTitle">Como jogar</h2>
+      <button class="modal-close" data-close="modalRules" aria-label="Fechar">✕</button>
+    </div>
+    <p>Escolha um amigo para fazer uma tentativa e descubra quem é o <strong>amigo do dia</strong> usando o menor número possível de tentativas.</p>
+
+    <div class="rule-item">
+      <div class="rule-badge green">✓</div>
+      <div class="rule-text"><strong>Verde</strong> significa que o atributo é exatamente igual ao do amigo secreto.</div>
+    </div>
+    <div class="rule-item">
+      <div class="rule-badge yellow">≈</div>
+      <div class="rule-text"><strong>Amarelo</strong> indica que o valor tem alguma relação (mesma cidade/estado, mesmo elemento do signo, faixa próxima de idade ou altura, nível de gamer vizinho...).</div>
+    </div>
+    <div class="rule-item">
+      <div class="rule-badge red">✕</div>
+      <div class="rule-text"><strong>Vermelho</strong> significa que não há relação com o amigo secreto.</div>
+    </div>
+    <div class="rule-item">
+      <div class="rule-badge arrow">⬆️</div>
+      <div class="rule-text">Para <strong>idade</strong>, <strong>altura</strong> e <strong>nível de gamer</strong>, uma seta mostra se o valor correto é maior (⬆️) ou menor (⬇️) que o seu palpite.</div>
+    </div>
+    <p>No <strong>Modo Diário</strong> todo mundo tenta descobrir o mesmo amigo, que muda automaticamente à meia-noite. No <strong>Modo Livre</strong> você pode sortear quantos amigos quiser, sem limite de tentativas.</p>
+  </div>
+</div>
+
+<!-- ===================== MODAL: CONFIGURAÇÕES ===================== -->
+<div class="overlay hidden" id="modalSettings">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+    <div class="modal-head">
+      <h2 class="modal-title" id="settingsTitle">Configurações</h2>
+      <button class="modal-close" data-close="modalSettings" aria-label="Fechar">✕</button>
+    </div>
+
+    <div class="setting-row">
+      <div>
+        <div class="setting-label">Sons</div>
+        <div class="setting-desc">Efeitos sonoros de tentativa, acerto e vitória.</div>
+      </div>
+      <label class="switch">
+        <input type="checkbox" id="toggleSound" checked />
+        <span class="switch-track"></span>
+      </label>
+    </div>
+
+    <div class="setting-row">
+      <div>
+        <div class="setting-label">Tema escuro</div>
+        <div class="setting-desc">Alterna entre modo escuro e modo claro.</div>
+      </div>
+      <label class="switch">
+        <input type="checkbox" id="toggleTheme" checked />
+        <span class="switch-track"></span>
+      </label>
+    </div>
+
+    <button class="danger-btn" id="btnResetProgress">Apagar todo o progresso</button>
+  </div>
+</div>
+
+<!-- ===================== MODAL: ESTATÍSTICAS ===================== -->
+<div class="overlay hidden" id="modalStats">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="statsTitle">
+    <div class="modal-head">
+      <h2 class="modal-title" id="statsTitle">Estatísticas</h2>
+      <button class="modal-close" data-close="modalStats" aria-label="Fechar">✕</button>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-box"><span class="stat-num" id="statJogadas">0</span><span class="stat-label">Jogadas</span></div>
+      <div class="stat-box"><span class="stat-num" id="statVitorias">0</span><span class="stat-label">Vitórias</span></div>
+      <div class="stat-box"><span class="stat-num" id="statTaxa">0%</span><span class="stat-label">Taxa de acerto</span></div>
+      <div class="stat-box"><span class="stat-num" id="statSeqAtual">0</span><span class="stat-label">Sequência atual</span></div>
+      <div class="stat-box"><span class="stat-num" id="statMelhorSeq">0</span><span class="stat-label">Melhor sequência</span></div>
+      <div class="stat-box"><span class="stat-num" id="statMedia">0</span><span class="stat-label">Média tentativas</span></div>
+      <div class="stat-box"><span class="stat-num" id="statMenor">–</span><span class="stat-label">Menor nº tentativas</span></div>
+      <div class="stat-box"><span class="stat-num" id="statMaior">–</span><span class="stat-label">Maior nº tentativas</span></div>
+    </div>
+
+    <h3 style="font-family:var(--font-display); font-size:1rem; margin:0 0 10px;">Distribuição de tentativas</h3>
+    <div id="distribution"></div>
+  </div>
+</div>
+
+<!-- ===================== MODAL: VITÓRIA ===================== -->
+<div class="overlay hidden" id="modalWin">
+  <div class="modal win-modal" role="dialog" aria-modal="true" aria-labelledby="winTitle">
+    <div class="modal-head" style="justify-content:flex-end;">
+      <button class="modal-close" data-close="modalWin" aria-label="Fechar">✕</button>
+    </div>
+
+    <div class="win-portrait">
+      <img id="winPortraitImg" src="" alt="" />
+    </div>
+    <h2 class="win-name" id="winTitle">Nome</h2>
+    <div class="win-apelido" id="winApelido">Apelido</div>
+    <p class="win-message" id="winMessage"></p>
+
+    <div class="win-metrics">
+      <div class="win-metric">
+        <span class="num" id="winAttempts">0</span>
+        <span class="label">Tentativas</span>
+      </div>
+      <div class="win-metric">
+        <span class="num" id="winStreak">0</span>
+        <span class="label">Sequência</span>
+      </div>
+    </div>
+
+    <div class="next-timer" id="nextTimerBox">
+      Próximo amigo em:
+      <strong id="nextTimer">--:--:--</strong>
+    </div>
+
+    <div class="win-actions">
+      <button class="secondary-btn" id="btnShare">📋 Compartilhar</button>
+      <button class="primary-btn" id="btnWinClose">Fechar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== MODAL: CONFIRMAR RESET ===================== -->
+<div class="overlay hidden" id="modalConfirmReset">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
+    <div class="modal-head">
+      <h2 class="modal-title" id="confirmTitle">Apagar progresso?</h2>
+      <button class="modal-close" data-close="modalConfirmReset" aria-label="Fechar">✕</button>
+    </div>
+    <p>Isso vai apagar todas as suas estatísticas e o progresso do dia atual. Essa ação não pode ser desfeita.</p>
+    <div class="win-actions">
+      <button class="secondary-btn" data-close="modalConfirmReset">Cancelar</button>
+      <button class="danger-btn" id="btnConfirmReset" style="margin:0;">Apagar tudo</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="js/friends-data.js"></script>
+<script src="js/data.js"></script>
+<script src="js/storage.js"></script>
+<script src="js/game.js"></script>
+</body>
+</html>
