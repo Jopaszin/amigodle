@@ -25,7 +25,7 @@
     "faculdade": "UFJF",
     "curso": "Ciencias Exatas",
     "altura": 1.72,
-    "jogo_favorito": "Skyrim",
+    "jogo_favorito": "Elden Ring",
     "time": "Fluminense",
     "nivel_de_gamer": "Prata"
   },
@@ -35,13 +35,13 @@
     "apelido": "Fala Dele",
     "foto": "images/3.svg",
     "idade": 23,
-    "genero": "LGBTQIAPN+",
+    "genero": "Amigo",
     "profissao": "Prefeito",
     "faculdade": "UFJF",
     "curso": "Administração",
-    "altura": 1.90,
+    "altura": 1.98,
     "jogo_favorito": "Valorant",
-    "time": "Flamengo",
+    "time": "Miami Heat",
     "nivel_de_gamer": "Casual"
   },
   {
@@ -71,7 +71,7 @@
     "curso": "Artes Visuais",
     "altura": 1.55,
     "jogo_favorito": "The Witcher",
-    "time": "Vasco",
+    "time": "MIBR",
     "nivel_de_gamer": "Casual"
   }
 ]

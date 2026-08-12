@@ -21,44 +21,41 @@ window.AMIGODLE_FRIENDS = [
     "time": "Botafogo",
     "nivel_de_gamer": "Tryhard"
   },
-
   {
     "id": 2,
     "nome": "Arthur",
     "apelido": "Khan",
-    "foto": "images/1.svg",
+    "foto": "images/2.svg",
     "idade": 23,
     "genero": "Masculino",
     "profissao": "Atoa",
     "faculdade": "UFJF",
     "curso": "Ciencias Exatas",
     "altura": 1.72,
-    "jogo_favorito": "Skyrim",
+    "jogo_favorito": "Elden Ring",
     "time": "Fluminense",
     "nivel_de_gamer": "Prata"
   },
-
   {
     "id": 3,
     "nome": "Romulo",
     "apelido": "Fala Dele",
-    "foto": "images/1.svg",
+    "foto": "images/3.svg",
     "idade": 23,
-    "genero": "LGBTQIAPN+",
+    "genero": "Amigo",
     "profissao": "Prefeito",
     "faculdade": "UFJF",
     "curso": "Administração",
-    "altura": 1.90,
+    "altura": 1.98,
     "jogo_favorito": "Valorant",
-    "time": "Flamengo",
+    "time": "Miami Heat",
     "nivel_de_gamer": "Casual"
   },
-
   {
     "id": 4,
     "nome": "Matheus",
     "apelido": "Mathizzex",
-    "foto": "images/1.svg",
+    "foto": "images/4.svg",
     "idade": 26,
     "genero": "Alguma",
     "profissao": "Barman",
@@ -69,7 +66,6 @@ window.AMIGODLE_FRIENDS = [
     "time": "Cruzeiro",
     "nivel_de_gamer": "Troll"
   },
-
   {
     "id": 5,
     "nome": "Leticia",
@@ -82,7 +78,7 @@ window.AMIGODLE_FRIENDS = [
     "curso": "Artes Visuais",
     "altura": 1.55,
     "jogo_favorito": "The Witcher",
-    "time": "Vasco",
+    "time": "MIBR",
     "nivel_de_gamer": "Casual"
   }
 ];
