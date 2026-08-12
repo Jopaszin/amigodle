@@ -74,16 +74,16 @@ window.AMIGODLE_FRIENDS = [
     "id": 5,
     "nome": "Leticia",
     "apelido": "Litenheks",
-    "foto": "images/1.svg",
+    "foto": "images/5.svg",
     "idade": 23,
     "genero": "Feminino",
-    "profissao": "Sem",
+    "profissao": "Artista",
     "faculdade": "UFJF",
-    "curso": "Artes e Design",
-    "altura": 1.58,
-    "jogo_favorito": "Tomb Raider",
+    "curso": "Artes Visuais",
+    "altura": 1.55,
+    "jogo_favorito": "The Witcher",
     "time": "Vasco",
-    "nivel_de_gamer": "Tenta"
+    "nivel_de_gamer": "Casual"
   }
 ];
 ```

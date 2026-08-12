@@ -79,6 +79,10 @@
     btnWinClose: el("btnWinClose"),
 
     toast: el("toast"),
+
+    // Abas de estatísticas (pessoal vs global)
+    btnStatsPersonal: el("btnStatsPersonal"),
+    btnStatsGlobal: el("btnStatsGlobal"),
   };
 
   // ---------------------------------------------------------
@@ -93,6 +97,7 @@
     selectedFriend: null,
     activeSuggestionIndex: -1,
     dayKey: null,
+    statsTab: "personal", // 'personal' | 'global'
   };
 
   let settings = AmigodleStorage.getSettings();
@@ -408,8 +413,6 @@
 
     let friend = state.selectedFriend;
 
-    // Se o texto não corresponde a uma seleção válida, tenta achar
-    // um match exato (caso o usuário tenha digitado certinho sem clicar).
     if (!friend) {
       friend = AmigodleData.getFriends().find(
         (f) => AmigodleData.normalize(f.nome) === AmigodleData.normalize(typed)
@@ -534,7 +537,6 @@
       DOM.nextTimer.textContent = `${h}:${m}:${s}`;
       if (ms <= 1000) {
         clearInterval(countdownTimer);
-        // Novo dia começou: recarrega o modo diário automaticamente.
         if (state.mode === "daily") loadDailyMode();
       }
     };
@@ -567,7 +569,6 @@
       await navigator.clipboard.writeText(text);
       showToast("Resultado copiado! Cole onde quiser 🎉");
     } catch {
-      // Fallback manual caso clipboard falhe (ex: permissão negada)
       try {
         const ta = document.createElement("textarea");
         ta.value = text;
@@ -608,7 +609,6 @@
     const dayKey = AmigodleData.getTodayKey(today);
     const secret = AmigodleData.getDailyFriend(today);
 
-    // Se o jogador não jogou nem ontem nem hoje ainda, a sequência quebra.
     const stats = AmigodleStorage.getStats();
     if (
       stats.ultimoDiaJogado &&
@@ -650,7 +650,6 @@
     finishSetupRender();
 
     if (state.finished && state.won) {
-      // Já ganhou hoje: mostra tudo revelado, sem reabrir modal automaticamente.
       updatePortrait();
     }
   }
@@ -715,26 +714,64 @@
   }
 
   // ---------------------------------------------------------
-  // Estatísticas (modal)
+  // Estatísticas (modal) - Pessoal e Global
   // ---------------------------------------------------------
-  function renderStatsModal() {
-    const s = AmigodleStorage.getStats();
-    DOM.statJogadas.textContent = s.jogadas;
-    DOM.statVitorias.textContent = s.vitorias;
-    DOM.statTaxa.textContent = s.jogadas ? Math.round((s.vitorias / s.jogadas) * 100) + "%" : "0%";
-    DOM.statSeqAtual.textContent = s.sequenciaAtual;
-    DOM.statMelhorSeq.textContent = s.melhorSequencia;
-    DOM.statMedia.textContent = s.vitorias
-      ? (s.somaTentativasVitorias / s.vitorias).toFixed(1)
-      : "0";
-    DOM.statMenor.textContent = s.menorTentativas ?? "–";
-    DOM.statMaior.textContent = s.maiorTentativas ?? "–";
+  async function renderStatsModal() {
+    if (state.statsTab === "global") {
+      const dayKey = state.dayKey || AmigodleData.getTodayKey(new Date());
+      const globalData = await AmigodleStorage.fetchGlobalStats(dayKey);
 
-    const maxCount = Math.max(1, ...Object.values(s.distribuicao || {}));
-    const totalAttrs = AmigodleData.ATTRIBUTES.length;
+      if (!globalData) {
+        DOM.statJogadas.textContent = "0";
+        DOM.statVitorias.textContent = "0";
+        DOM.statTaxa.textContent = "0%";
+        DOM.statSeqAtual.textContent = "–";
+        DOM.statMelhorSeq.textContent = "–";
+        DOM.statMedia.textContent = "–";
+        DOM.statMenor.textContent = "–";
+        DOM.statMaior.textContent = "–";
+        DOM.distribution.innerHTML = `<p style="text-align:center; opacity:0.6;">Ainda não há dados suficientes para o dia de hoje.</p>`;
+        return;
+      }
+
+      const jogadas = globalData.jogadas || 0;
+      const vitorias = globalData.vitorias || 0;
+      const taxa = jogadas ? Math.round((vitorias / jogadas) * 100) + "%" : "0%";
+      const dist = globalData.distribuicao || {};
+
+      DOM.statJogadas.textContent = jogadas;
+      DOM.statVitorias.textContent = vitorias;
+      DOM.statTaxa.textContent = taxa;
+      DOM.statSeqAtual.textContent = "–";
+      DOM.statMelhorSeq.textContent = "–";
+      DOM.statMedia.textContent = "–";
+      DOM.statMenor.textContent = "–";
+      DOM.statMaior.textContent = "–";
+
+      renderDistributionChart(dist);
+    } else {
+      // Estatísticas Pessoais (Padrão)
+      const s = AmigodleStorage.getStats();
+      DOM.statJogadas.textContent = s.jogadas;
+      DOM.statVitorias.textContent = s.vitorias;
+      DOM.statTaxa.textContent = s.jogadas ? Math.round((s.vitorias / s.jogadas) * 100) + "%" : "0%";
+      DOM.statSeqAtual.textContent = s.sequenciaAtual;
+      DOM.statMelhorSeq.textContent = s.melhorSequencia;
+      DOM.statMedia.textContent = s.vitorias
+        ? (s.somaTentativasVitorias / s.vitorias).toFixed(1)
+        : "0";
+      DOM.statMenor.textContent = s.menorTentativas ?? "–";
+      DOM.statMaior.textContent = s.maiorTentativas ?? "–";
+
+      renderDistributionChart(s.distribuicao || {});
+    }
+  }
+
+  function renderDistributionChart(distrib) {
+    const maxCount = Math.max(1, ...Object.values(distrib));
     DOM.distribution.innerHTML = "";
-    for (let i = 1; i <= Math.max(10, totalAttrs > 15 ? 10 : 10); i++) {
-      const count = (s.distribuicao || {})[String(i)] || 0;
+    for (let i = 1; i <= 10; i++) {
+      const count = distrib[String(i)] || 0;
       const pct = Math.max((count / maxCount) * 100, count > 0 ? 8 : 0);
       const row = document.createElement("div");
       row.className = "dist-row";
@@ -747,6 +784,25 @@
         </div>`;
       DOM.distribution.appendChild(row);
     }
+  }
+
+  // Eventos de alternância das abas de Estatísticas
+  if (DOM.btnStatsPersonal) {
+    DOM.btnStatsPersonal.addEventListener("click", () => {
+      state.statsTab = "personal";
+      DOM.btnStatsPersonal.classList.add("active");
+      if (DOM.btnStatsGlobal) DOM.btnStatsGlobal.classList.remove("active");
+      renderStatsModal();
+    });
+  }
+
+  if (DOM.btnStatsGlobal) {
+    DOM.btnStatsGlobal.addEventListener("click", () => {
+      state.statsTab = "global";
+      DOM.btnStatsGlobal.classList.add("active");
+      if (DOM.btnStatsPersonal) DOM.btnStatsPersonal.classList.remove("active");
+      renderStatsModal();
+    });
   }
 
   DOM.btnStats.addEventListener("click", () => {

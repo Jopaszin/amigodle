@@ -185,7 +185,10 @@
 <div class="overlay hidden" id="modalStats">
   <div class="modal" role="dialog" aria-modal="true" aria-labelledby="statsTitle">
     <div class="modal-head">
-      <h2 class="modal-title" id="statsTitle">Estatísticas</h2>
+      <div class="stats-tabs">
+        <button id="btnStatsPersonal" class="tab-btn active">Você</button>
+        <button id="btnStatsGlobal" class="tab-btn">Comunidade</button>
+      </div>
       <button class="modal-close" data-close="modalStats" aria-label="Fechar">✕</button>
     </div>
 
@@ -200,7 +203,7 @@
       <div class="stat-box"><span class="stat-num" id="statMaior">–</span><span class="stat-label">Maior nº tentativas</span></div>
     </div>
 
-    <h3 style="font-family:var(--font-display); font-size:1rem; margin:0 0 10px;">Distribuição de tentativas</h3>
+    <h3 style="font-family:var(--font-display); font-size:1rem; margin:15px 0 10px;">Distribuição de tentativas</h3>
     <div id="distribution"></div>
   </div>
 </div>
@@ -258,6 +261,32 @@
 </div>
 
 <div class="toast" id="toast"></div>
+
+<!-- Firebase SDK -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+  import { getDatabase, ref, runTransaction, get, child } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+  const firebaseConfig = {
+  apiKey: "AIzaSyD4MHSNp1D6rvtIlfs0oMv8mszpTKBKXqc",
+  authDomain: "amigodle.firebaseapp.com",
+  databaseURL: "https://amigodle-default-rtdb.firebaseio.com",
+  projectId: "amigodle",
+  storageBucket: "amigodle.firebasestorage.app",
+  messagingSenderId: "493004456255",
+  appId: "1:493004456255:web:aec89477ba6cb453b0938a",
+  measurementId: "G-YBMT01S47M"
+};
+
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+
+  window.db = db;
+  window.dbRef = ref;
+  window.dbTransaction = runTransaction;
+  window.dbGet = get;
+  window.dbChild = child;
+</script>
 
 <script src="js/friends-data.js"></script>
 <script src="js/data.js"></script>

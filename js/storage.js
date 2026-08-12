@@ -1,8 +1,7 @@
 /* =========================================================
    AMIGODLE — storage.js
    Toda a leitura/escrita no localStorage passa por aqui.
-   Nenhum dado é enviado para servidores externos: tudo fica
-   salvo apenas no navegador do jogador.
+   Sincroniza estatísticas globais com o Firebase.
    ========================================================= */
 
 const AmigodleStorage = (() => {
@@ -21,7 +20,7 @@ const AmigodleStorage = (() => {
     menorTentativas: null,
     maiorTentativas: null,
     distribuicao: {}, // { "1": 2, "2": 5, ... }
-    ultimoDiaJogado: null, // yyyy-mm-dd, para saber se a sequência quebrou
+    ultimoDiaJogado: null, // yyyy-mm-dd
   };
 
   const DEFAULT_SETTINGS = {
@@ -48,13 +47,13 @@ const AmigodleStorage = (() => {
 
   /**
    * Registra o resultado de uma partida do MODO DIÁRIO.
-   * O modo livre nunca chama esta função.
+   * Atualiza o localStorage pessoal e o banco global no Firebase.
    */
   function registerDailyResult({ won, attempts, dayKey }) {
     const stats = getStats();
     stats.jogadas += 1;
 
-    // Sequência: se o último dia jogado não foi o dia anterior, zera.
+    // Sequência local do jogador
     if (won) {
       stats.vitorias += 1;
       stats.sequenciaAtual += 1;
@@ -72,17 +71,48 @@ const AmigodleStorage = (() => {
 
     stats.ultimoDiaJogado = dayKey;
     saveStats(stats);
+
+    // --- ENVIAR PARA O FIREBASE (ESTATÍSTICAS GLOBAIS) ---
+    if (window.db && window.dbRef && window.dbTransaction) {
+      const statsRef = window.dbRef(window.db, `global_stats/${dayKey}`);
+      
+      window.dbTransaction(statsRef, (current) => {
+        if (!current) {
+          current = { jogadas: 0, vitorias: 0, distribuicao: {} };
+        }
+        current.jogadas = (current.jogadas || 0) + 1;
+        if (won) {
+          current.vitorias = (current.vitorias || 0) + 1;
+          current.distribuicao = current.distribuicao || {};
+          current.distribuicao[attempts] = (current.distribuicao[attempts] || 0) + 1;
+        }
+        return current;
+      }).catch(err => console.error("Erro ao sincronizar com Firebase:", err));
+    }
+
     return stats;
+  }
+
+  /**
+   * Busca as estatísticas globais da comunidade do Firebase para o dia específico.
+   */
+  async function fetchGlobalStats(dayKey) {
+    if (!window.db || !window.dbRef || !window.dbGet || !window.dbChild) {
+      return null;
+    }
+    try {
+      const snapshot = await window.dbGet(window.dbChild(window.dbRef(window.db), `global_stats/${dayKey}`));
+      return snapshot.exists() ? snapshot.val() : null;
+    } catch (err) {
+      console.error("Erro ao buscar estatísticas globais do Firebase:", err);
+      return null;
+    }
   }
 
   function resetStats() {
     saveStats({ ...DEFAULT_STATS, distribuicao: {} });
   }
 
-  /**
-   * Estado da partida diária em andamento (persiste tentativas,
-   * se já ganhou, etc). Guardamos a data para saber se é de hoje.
-   */
   function getDailyState() {
     const fallback = { dayKey: null, attempts: [], finished: false, won: false };
     return safeParse(localStorage.getItem(KEYS.DAILY_STATE), fallback);
@@ -103,13 +133,13 @@ const AmigodleStorage = (() => {
   function clearAllProgress() {
     localStorage.removeItem(KEYS.STATS);
     localStorage.removeItem(KEYS.DAILY_STATE);
-    // Configurações (som/tema) são mantidas de propósito.
   }
 
   return {
     getStats,
     saveStats,
     registerDailyResult,
+    fetchGlobalStats, // Exporta a nova função global
     resetStats,
     getDailyState,
     saveDailyState,
