@@ -73,8 +73,13 @@
     winMessage: el("winMessage"),
     winAttempts: el("winAttempts"),
     winStreak: el("winStreak"),
+
+    // Contadores de tempo (Página Inicial e Modal)
+    timer: el("timer"),
+    countdownContainer: el("countdown-container"),
     nextTimer: el("nextTimer"),
     nextTimerBox: el("nextTimerBox"),
+
     btnShare: el("btnShare"),
     btnWinClose: el("btnWinClose"),
 
@@ -454,6 +459,12 @@
     if (isCorrect) {
       state.finished = true;
       state.won = true;
+
+      // Trava o campo de texto e botão imediatamente ao acertar
+      DOM.guessInput.disabled = true;
+      DOM.guessInput.placeholder = "Você já acertou o amigo de hoje!";
+      DOM.btnGuess.disabled = true;
+
       setTimeout(() => finishGame(true), flipTotalDelay);
     } else {
       setTimeout(() => Sound.wrong(), 60);
@@ -514,7 +525,6 @@
 
     if (state.mode === "daily") {
       DOM.nextTimerBox.classList.remove("hidden");
-      startCountdown();
     } else {
       DOM.nextTimerBox.classList.add("hidden");
     }
@@ -534,7 +544,19 @@
       const h = String(Math.floor(ms / 3600000)).padStart(2, "0");
       const m = String(Math.floor((ms % 3600000) / 60000)).padStart(2, "0");
       const s = String(Math.floor((ms % 60000) / 1000)).padStart(2, "0");
-      DOM.nextTimer.textContent = `${h}:${m}:${s}`;
+      
+      const formattedTime = `${h}:${m}:${s}`;
+
+      // Atualiza o temporizador da página inicial
+      if (DOM.timer) {
+        DOM.timer.textContent = formattedTime;
+      }
+
+      // Atualiza o temporizador do modal de vitória
+      if (DOM.nextTimer) {
+        DOM.nextTimer.textContent = formattedTime;
+      }
+
       if (ms <= 1000) {
         clearInterval(countdownTimer);
         if (state.mode === "daily") loadDailyMode();
@@ -604,7 +626,6 @@
   }
 
   function loadDailyMode() {
-    clearInterval(countdownTimer);
     const today = new Date();
     const dayKey = AmigodleData.getTodayKey(today);
     const secret = AmigodleData.getDailyFriend(today);
@@ -647,10 +668,20 @@
       "Um amigo novo todo dia — todo mundo joga contra o mesmo amigo.";
     DOM.freePicker.classList.remove("active");
 
+    if (DOM.countdownContainer) {
+      DOM.countdownContainer.classList.remove("hidden");
+    }
+
+    startCountdown();
     finishSetupRender();
 
     if (state.finished && state.won) {
       updatePortrait();
+      
+      // Garante a trava do campo e botão ao recarregar a página se já venceu
+      DOM.guessInput.disabled = true;
+      DOM.guessInput.placeholder = "Você já acertou o amigo de hoje!";
+      DOM.btnGuess.disabled = true;
     }
   }
 
@@ -674,6 +705,10 @@
     DOM.freePicker.classList.add("active");
     DOM.puzzleNumber.textContent = "∞";
 
+    if (DOM.countdownContainer) {
+      DOM.countdownContainer.classList.add("hidden");
+    }
+
     finishSetupRender();
   }
 
@@ -681,6 +716,8 @@
 
   function finishSetupRender() {
     DOM.guessInput.value = "";
+    DOM.guessInput.disabled = false;
+    DOM.guessInput.placeholder = "Digite o nome do seu amigo...";
     DOM.errorMsg.textContent = "";
     DOM.guessInput.classList.remove("input-error");
     state.selectedFriend = null;

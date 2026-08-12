@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css" />
+<link rel="stylesheet" href="css/style.css?v=1.1" />
 </head>
 <body>
 
@@ -50,6 +50,13 @@
     </div>
   </section>
 
+  <!-- ===================== CONTADOR ===================== -->
+  <div id="countdown-container" class="countdown-container">
+    <p class="countdown-title">Próximo Amigodle em</p>
+    <div id="timer" class="timer">00:00:00</div>
+  </div>
+
+  <!-- ===================== MODO DE JOGO ===================== -->
   <div class="mode-switch" role="tablist" aria-label="Modo de jogo">
     <button class="mode-btn active" id="btnModeDaily" role="tab" aria-selected="true">🗓️ Modo Diário</button>
     <button class="mode-btn" id="btnModeFree" role="tab" aria-selected="false">♾️ Modo Livre</button>
@@ -216,7 +223,7 @@
     </div>
 
     <div class="win-portrait">
-      <img id="winPortraitImg" src="" alt="" />
+      <img id="winPortraitImg" src="" alt="Foto do amigo revelado" />
     </div>
     <h2 class="win-name" id="winTitle">Nome</h2>
     <div class="win-apelido" id="winApelido">Apelido</div>
@@ -235,7 +242,7 @@
 
     <div class="next-timer" id="nextTimerBox">
       Próximo amigo em:
-      <strong id="nextTimer">--:--:--</strong>
+      <strong id="nextTimer">00:00:00</strong>
     </div>
 
     <div class="win-actions">
@@ -268,15 +275,15 @@
   import { getDatabase, ref, runTransaction, get, child } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
   const firebaseConfig = {
-  apiKey: "AIzaSyD4MHSNp1D6rvtIlfs0oMv8mszpTKBKXqc",
-  authDomain: "amigodle.firebaseapp.com",
-  databaseURL: "https://amigodle-default-rtdb.firebaseio.com",
-  projectId: "amigodle",
-  storageBucket: "amigodle.firebasestorage.app",
-  messagingSenderId: "493004456255",
-  appId: "1:493004456255:web:aec89477ba6cb453b0938a",
-  measurementId: "G-YBMT01S47M"
-};
+    apiKey: "AIzaSyD4MHSNp1D6rvtIlfs0oMv8mszpTKBKXqc",
+    authDomain: "amigodle.firebaseapp.com",
+    databaseURL: "https://amigodle-default-rtdb.firebaseio.com",
+    projectId: "amigodle",
+    storageBucket: "amigodle.firebasestorage.app",
+    messagingSenderId: "493004456255",
+    appId: "1:493004456255:web:aec89477ba6cb453b0938a",
+    measurementId: "G-YBMT01S47M"
+  };
 
   const app = initializeApp(firebaseConfig);
   const db = getDatabase(app);

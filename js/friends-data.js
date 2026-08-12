@@ -63,7 +63,7 @@ window.AMIGODLE_FRIENDS = [
     "genero": "Alguma",
     "profissao": "Barman",
     "faculdade": "UFJF",
-    "curso": "Artes e Design",
+    "curso": "Artes Visuais",
     "altura": 1.75,
     "jogo_favorito": "Fifa",
     "time": "Cruzeiro",
